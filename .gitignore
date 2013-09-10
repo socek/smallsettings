@@ -1,0 +1,15 @@
+*.pyc
+*.pyo
+*.egg-info
+build
+dist
+*.log
+*.sublime*
+/test
+.coverage
+.ropeproject
+venv/
+pymkmodules
+test.py
+TODO
+htmlcov
