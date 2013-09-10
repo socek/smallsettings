@@ -12,6 +12,9 @@ class Settings(object):
     def __getitem__(self, key):
         return self.data[key] % self
 
+    def __contains__(self, key):
+        return key in self.data
+
 
 class Paths(Settings):
 
@@ -42,3 +45,6 @@ class Merged(object):
             return self.paths[key]
         else:
             raise KeyError(key)
+
+    def __contains__(self, key):
+        return (key in self.settings) or (key in self.paths)
