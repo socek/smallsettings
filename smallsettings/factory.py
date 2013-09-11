@@ -1,6 +1,6 @@
 from os.path import dirname, abspath
 
-from settings import Settings, Paths, Merged
+from settings import Settings, Paths
 
 
 class Factory(object):
@@ -18,19 +18,18 @@ class Factory(object):
 
     def run_module(self, name):
         module = self.import_module(name)
-        module.make_settings(self.settings, self.paths, self.merged)
+        module.make_settings(self.settings, self.paths)
 
     def run_module_without_errors(self, name, settings):
         try:
             module = self.import_module(name)
-            return module.make_settings(self.settings, self.paths, self.merged)
+            return module.make_settings(self.settings, self.paths)
         except ImportError:
             pass
 
     def init_data(self, settings, paths):
         self.settings = Settings(settings)
         self.paths = Paths(paths)
-        self.merged = Merged(self.settings, self.paths)
 
         mainmodule = __import__(
             self.main_modulepath, globals(), locals(), ['']
@@ -47,4 +46,4 @@ class Factory(object):
         else:
             self.run_module_without_errors(additional_module_name)
 
-        return self.settings, self.paths, self.merged
+        return self.settings, self.paths

@@ -15,14 +15,22 @@ class Settings(object):
     def __contains__(self, key):
         return key in self.data
 
+    def merged(self, settings):
+        return Merged([self, settings])
+
 
 class Paths(Settings):
+
+    def __init__(self, data={}):
+        self.data = {}
+        for name, value in data.items():
+            self[name] = value
 
     def __getitem__(self, key):
         parsed_values = []
         for value in self.data[key]:
             parsed_values.append(
-                value % self.data
+                value % self
             )
         return os.path.join(*parsed_values)
 
@@ -31,20 +39,26 @@ class Paths(Settings):
             value = [value, ]
         self.data[key] = value
 
+    def merged(self, settings):
+        return Merged([self, settings])
+
 
 class Merged(object):
 
-    def __init__(self, settings, paths):
-        self.settings = settings
-        self.paths = paths
+    def __init__(self, settings_list):
+        self.settings_list = settings_list
 
     def __getitem__(self, key):
-        if key in self.settings.data:
-            return self.settings[key]
-        elif key in self.paths.data:
-            return self.paths[key]
-        else:
-            raise KeyError(key)
+        for settings in self.settings_list:
+            if key in settings:
+                return settings[key]
+        raise KeyError(key)
 
     def __contains__(self, key):
-        return (key in self.settings) or (key in self.paths)
+        contains = False
+        for settings in self.settings_list:
+            contains |= key in settings
+        return contains
+
+    def merge(self, settings):
+        self.settings_list.append(settings)
