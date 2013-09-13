@@ -12,7 +12,7 @@ class Factory(object):
     def _import_wrapper(self, modulepath):
         return __import__(
             modulepath, globals(), locals(), ['']
-        ) #pragma: no cover
+        )
 
     def import_module(self, modulename):
         modulepath = '.'.join(

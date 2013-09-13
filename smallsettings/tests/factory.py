@@ -1,3 +1,4 @@
+import sys
 from mock import patch, MagicMock
 from contextlib import nested
 
@@ -123,3 +124,18 @@ class FactoryTest(TestCase):
             run_module.assert_called_with('local1')
             self.assertEqual(2, run_module.call_count)
             self.assertEqual(0, run_module_without_errors.call_count)
+
+    def test_import_wrapper_with_error(self):
+        self.patchers['import'].stop()
+
+        self.assertRaises(ImportError, self.factory._import_wrapper, 'something')
+
+    def test_import_wrapper(self):
+        self.patchers['import'].stop()
+        with patch.dict(sys.modules):
+            if 'os' in sys.modules:
+                sys.modules.pop('os')
+            module = self.factory._import_wrapper('os')
+            self.assertTrue('os' in sys.modules)
+            import os
+            self.assertTrue(module is os)
