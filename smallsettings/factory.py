@@ -9,21 +9,24 @@ class Factory(object):
         self.main_modulepath = main_modulepath
         self.settings_modulepath = settings_modulepath
 
+    def _import_wrapper(self, modulepath):
+        return __import__(
+            modulepath, globals(), locals(), ['']
+        ) #pragma: no cover
+
     def import_module(self, modulename):
         modulepath = '.'.join(
             [self.main_modulepath, self.settings_modulepath, modulename])
-        return __import__(
-            modulepath, globals(), locals(), ['']
-        )
+        return self._import_wrapper(modulepath)
 
     def run_module(self, name):
         module = self.import_module(name)
         module.make_settings(self.settings, self.paths)
 
-    def run_module_without_errors(self, name, settings):
+    def run_module_without_errors(self, name):
         try:
             module = self.import_module(name)
-            return module.make_settings(self.settings, self.paths)
+            module.make_settings(self.settings, self.paths)
         except ImportError:
             pass
 
@@ -31,9 +34,8 @@ class Factory(object):
         self.settings = Settings(settings)
         self.paths = Paths(paths)
 
-        mainmodule = __import__(
-            self.main_modulepath, globals(), locals(), ['']
-        )
+        mainmodule = self._import_wrapper(self.main_modulepath)
+
         self.paths['project_path'] = dirname(abspath(mainmodule.__file__))
 
     def make_settings(self, settings={}, paths={}, additional_module_name='local', additional_module_error=False):

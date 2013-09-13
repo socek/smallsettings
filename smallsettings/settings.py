@@ -10,7 +10,11 @@ class Settings(object):
         self.data[key] = value
 
     def __getitem__(self, key):
-        return self.data[key] % self
+        value = self.data[key]
+        if type(value) in (str, unicode):
+            return value % self
+        else:
+            return value
 
     def __contains__(self, key):
         return key in self.data
