@@ -56,3 +56,7 @@ If we want to "merge" settings and paths, we co do this:
 
 Factory
 =======
+    >> from smallsettings import Factory
+    >> factory = Factory('modulename')
+    >> settings, paths = factory.make_settings()
+

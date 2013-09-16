@@ -7,6 +7,7 @@ from smallsettings import Factory
 
 
 class FactoryTest(TestCase):
+    # TODO: Give this class a tearDown!!!
 
     def setUp(self):
         super(FactoryTest, self).setUp()
@@ -101,10 +102,12 @@ class FactoryTest(TestCase):
                 patch.object(self.factory, 'run_module_without_errors'),
         ) as (init_data, run_module, run_module_without_errors):
             result = self.factory.make_settings(
-                {'settings': 1}, {'paths': 'path'}, additional_module_name='local1', additional_module_error=False)
+                {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', False)])
 
-            self.assertEqual((self.factory.settings, self.factory.paths), result)
-            init_data.assert_called_once_with({'settings': 1}, {'paths': 'path'})
+            self.assertEqual(
+                (self.factory.settings, self.factory.paths), result)
+            init_data.assert_called_once_with(
+                {'settings': 1}, {'paths': 'path'})
             run_module.assert_called_once_with('default')
             run_module_without_errors.assert_called_once_with('local1')
 
@@ -117,10 +120,12 @@ class FactoryTest(TestCase):
                 patch.object(self.factory, 'run_module_without_errors'),
         ) as (init_data, run_module, run_module_without_errors):
             result = self.factory.make_settings(
-                {'settings': 1}, {'paths': 'path'}, additional_module_name='local1', additional_module_error=True)
+                {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', True)])
 
-            self.assertEqual((self.factory.settings, self.factory.paths), result)
-            init_data.assert_called_once_with({'settings': 1}, {'paths': 'path'})
+            self.assertEqual(
+                (self.factory.settings, self.factory.paths), result)
+            init_data.assert_called_once_with(
+                {'settings': 1}, {'paths': 'path'})
             run_module.assert_called_with('local1')
             self.assertEqual(2, run_module.call_count)
             self.assertEqual(0, run_module_without_errors.call_count)
@@ -128,7 +133,8 @@ class FactoryTest(TestCase):
     def test_import_wrapper_with_error(self):
         self.patchers['import'].stop()
 
-        self.assertRaises(ImportError, self.factory._import_wrapper, 'something')
+        self.assertRaises(
+            ImportError, self.factory._import_wrapper, 'something')
 
     def test_import_wrapper(self):
         self.patchers['import'].stop()
