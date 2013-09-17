@@ -7,7 +7,6 @@ from smallsettings import Factory
 
 
 class FactoryTest(TestCase):
-    # TODO: Give this class a tearDown!!!
 
     def setUp(self):
         super(FactoryTest, self).setUp()
@@ -18,6 +17,13 @@ class FactoryTest(TestCase):
 
         self._init_patchers()
         self._start_patchers()
+
+    def tearDown(self):
+        for name, patcher in self.patchers.items():
+            try:
+                patcher.stop()
+            except RuntimeError:
+                pass
 
     def _start_patchers(self):
         for name, patcher in self.patchers.items():
