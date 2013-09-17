@@ -1,23 +1,17 @@
 import os
 
 
-class Settings(object):
+class Settings(dict):
 
     def __init__(self, data={}):
-        self.data = data
-
-    def __setitem__(self, key, value):
-        self.data[key] = value
+        super(Settings, self).__init__(data)
 
     def __getitem__(self, key):
-        value = self.data[key]
+        value = super(Settings, self).__getitem__(key)
         if type(value) in (str, unicode):
             return value % self
         else:
             return value
-
-    def __contains__(self, key):
-        return key in self.data
 
     def merged(self, settings):
         return Merged([self, settings])
@@ -26,13 +20,13 @@ class Settings(object):
 class Paths(Settings):
 
     def __init__(self, data={}):
-        self.data = {}
+        super(Paths, self).__init__()
         for name, value in data.items():
             self[name] = value
 
     def __getitem__(self, key):
         parsed_values = []
-        for value in self.data[key]:
+        for value in super(Paths, self).__getitem__(key):
             parsed_values.append(
                 value % self
             )
@@ -41,7 +35,7 @@ class Paths(Settings):
     def __setitem__(self, key, value):
         if type(value) not in (list, tuple):
             value = [value, ]
-        self.data[key] = value
+        return super(Paths, self).__setitem__(key, value)
 
     def merged(self, settings):
         return Merged([self, settings])

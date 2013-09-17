@@ -56,7 +56,23 @@ If we want to "merge" settings and paths, we co do this:
 
 Factory
 =======
+
+If we want to use 'modulename.settings' where 'modulename' is our main module and
+'settings' is our settins module.
+
     >> from smallsettings import Factory
-    >> factory = Factory('modulename')
+    >> factory = Factory('modulename', 'settings')
     >> settings, paths = factory.make_settings()
 
+It will read the settings from modulename/settings/default.py. This file should
+looks like this:
+
+    >> def make_settings(settings, paths):
+    >>     settings['name'] = 'value'
+
+If we want to add some additional files for settings, like "local.py", we can do
+this:
+
+    >> settings, paths = factory.make_settings(additional_modules=[('local', False)])
+
+This is the default behavior. The bool means "raise error on absent module".

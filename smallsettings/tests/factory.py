@@ -89,9 +89,9 @@ class FactoryTest(TestCase):
         self.mocks['import'].return_value.__file__ = '/one/two/three.py'
         self.factory.init_data({'settings': 1}, {'paths': 'path'})
 
-        self.assertEqual({'settings': 1}, self.factory.settings.data)
+        self.assertEqual({'settings': 1}, self.factory.settings)
         self.assertEqual(
-            {'paths': ['path', ], 'project_path': ['/one/two']}, self.factory.paths.data)
+            {'paths': ['path', ], 'project_path': ['/one/two']}, self.factory.paths)
 
     def test_make_settings(self):
         self.factory.settings = MagicMock()
