@@ -14,6 +14,7 @@ class Settings(dict):
             return value
 
     def merged(self, settings):
+        """Gets Merged object of this object and another one."""
         return Merged([self, settings])
 
 
@@ -38,6 +39,7 @@ class Paths(Settings):
         return super(Paths, self).__setitem__(key, value)
 
     def merged(self, settings):
+        """Gets Merged object of this object and another one."""
         return Merged([self, settings])
 
 
@@ -59,4 +61,5 @@ class Merged(object):
         return contains
 
     def merge(self, settings):
+        """Add another Settings or Paths object to the list."""
         self.settings_list.append(settings)
