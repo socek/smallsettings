@@ -75,4 +75,4 @@ this:
 
     >> settings, paths = factory.make_settings(additional_modules=[('local', False)])
 
-This is the default behavior. The bool means "raise error on absent module".
+This is the default behavior. The bool means "raise error on missing module".
