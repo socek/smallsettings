@@ -1,6 +1,5 @@
 import sys
 from mock import patch, MagicMock
-from contextlib import nested
 
 from smallsettings.tests.base import TestCase
 from smallsettings import Factory
@@ -102,39 +101,35 @@ class FactoryTest(TestCase):
     def test_make_settings(self):
         self.factory.settings = MagicMock()
         self.factory.paths = MagicMock()
-        with nested(
-                patch.object(self.factory, 'init_data'),
-                patch.object(self.factory, 'run_module'),
-                patch.object(self.factory, 'run_module_without_errors'),
-        ) as (init_data, run_module, run_module_without_errors):
-            result = self.factory.make_settings(
-                {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', False)])
+        with patch.object(self.factory, 'init_data') as init_data:
+            with patch.object(self.factory, 'run_module') as run_module:
+                with patch.object(self.factory, 'run_module_without_errors') as run_module_without_errors:
+                    result = self.factory.make_settings(
+                        {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', False)])
 
-            self.assertEqual(
-                (self.factory.settings, self.factory.paths), result)
-            init_data.assert_called_once_with(
-                {'settings': 1}, {'paths': 'path'})
-            run_module.assert_called_once_with('default')
-            run_module_without_errors.assert_called_once_with('local1')
+                    self.assertEqual(
+                        (self.factory.settings, self.factory.paths), result)
+                    init_data.assert_called_once_with(
+                        {'settings': 1}, {'paths': 'path'})
+                    run_module.assert_called_once_with('default')
+                    run_module_without_errors.assert_called_once_with('local1')
 
     def test_make_settings_with_error(self):
         self.factory.settings = MagicMock()
         self.factory.paths = MagicMock()
-        with nested(
-                patch.object(self.factory, 'init_data'),
-                patch.object(self.factory, 'run_module'),
-                patch.object(self.factory, 'run_module_without_errors'),
-        ) as (init_data, run_module, run_module_without_errors):
-            result = self.factory.make_settings(
-                {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', True)])
+        with patch.object(self.factory, 'init_data') as init_data:
+            with patch.object(self.factory, 'run_module') as run_module:
+                with patch.object(self.factory, 'run_module_without_errors') as run_module_without_errors:
+                    result = self.factory.make_settings(
+                        {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', True)])
 
-            self.assertEqual(
-                (self.factory.settings, self.factory.paths), result)
-            init_data.assert_called_once_with(
-                {'settings': 1}, {'paths': 'path'})
-            run_module.assert_called_with('local1')
-            self.assertEqual(2, run_module.call_count)
-            self.assertEqual(0, run_module_without_errors.call_count)
+                    self.assertEqual(
+                        (self.factory.settings, self.factory.paths), result)
+                    init_data.assert_called_once_with(
+                        {'settings': 1}, {'paths': 'path'})
+                    run_module.assert_called_with('local1')
+                    self.assertEqual(2, run_module.call_count)
+                    self.assertEqual(0, run_module_without_errors.call_count)
 
     def test_import_wrapper_with_error(self):
         self.patchers['import'].stop()
