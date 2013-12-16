@@ -105,3 +105,8 @@ class MergedTest(TestCase):
 
         self.assertEqual(
             [self.sett1, self.sett2, sett3], self.merged.settings_list)
+
+    def test_to_dict(self):
+        data = self.merged.to_dict()
+        self.assertEqual(dict, type(data))
+        self.assertEqual({'one': 1, 'two': 2}, data)

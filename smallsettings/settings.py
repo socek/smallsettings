@@ -63,3 +63,9 @@ class Merged(object):
     def merge(self, settings):
         """Add another Settings or Paths object to the list."""
         self.settings_list.append(settings)
+
+    def to_dict(self):
+        data = {}
+        for item in self.settings_list:
+            data.update(item)
+        return data
