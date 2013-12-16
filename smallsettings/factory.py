@@ -1,6 +1,6 @@
 from os.path import dirname, abspath
 
-from settings import Settings, Paths
+from smallsettings.settings import Settings, Paths
 
 
 class Factory(object):
