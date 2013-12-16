@@ -8,7 +8,7 @@ class Settings(dict):
 
     def __getitem__(self, key):
         value = super(Settings, self).__getitem__(key)
-        if type(value) in (str, unicode):
+        if type(value) == str:
             return value % self
         else:
             return value
