@@ -67,5 +67,6 @@ class Merged(object):
     def to_dict(self):
         data = {}
         for item in self.settings_list:
-            data.update(item)
+            for name in item:
+                data[name] = item[name]
         return data

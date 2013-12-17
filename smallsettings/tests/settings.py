@@ -107,6 +107,8 @@ class MergedTest(TestCase):
             [self.sett1, self.sett2, sett3], self.merged.settings_list)
 
     def test_to_dict(self):
+        paths = Paths({'p1' : 'p1', 'p2' : ['%(p1)s', 'p2']})
+        self.merged.merge(paths)
         data = self.merged.to_dict()
         self.assertEqual(dict, type(data))
-        self.assertEqual({'one': 1, 'two': 2}, data)
+        self.assertEqual({'one': 1, 'two': 2, 'p1' : 'p1', 'p2' : 'p1/p2'}, data)
