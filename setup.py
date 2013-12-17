@@ -8,11 +8,12 @@ def read(fname):
 
 if __name__ == '__main__':
     setup(name='SmallSettings',
-          version='0.2',
+          version='0.2.1',
           author='Dominik "Socek" Długajczy',
           author_email='msocek@gmail.com',
           test_suite='smallsettings.tests.get_all_test_suite',
           packages=find_packages(),
+          package_data={'smallsettings': ['README.md']},
           long_description=read('README.md'),
           description = "Simple settings functions for projects.",
           )
