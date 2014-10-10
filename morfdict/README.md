@@ -1,13 +1,13 @@
-SmallSettings
-=============
+MorfDict
+========
 
 In many projects (web applicatons in particular) there is a need of making a settings. For application we need a 3 types of settings.
 * Application settings (for example: application name)
 * Envoritment settings (for example: url to database)
 * Dynamic settings (for example: what ads to we show today)
 
-SmallSettings provides solusion for the first 2 types of settings (the third one should be stored in the database).
-The second problem with settings is wrapping some settings. Sometimes you have to wrap var from app settings in envoritment settings, and sometime you have to do the oposit. SmallSettings has a solution for this.
+MorfDict provides solusion for the first 2 types of settings (the third one should be stored in the database).
+The second problem with settings is wrapping some settings. Sometimes you have to wrap var from app settings in envoritment settings, and sometime you have to do the oposit. MorfDict has a solution for this.
 
 Settings classes
 ========

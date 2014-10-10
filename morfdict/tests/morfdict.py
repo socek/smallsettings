@@ -1,5 +1,5 @@
 from .base import TestCase
-from smallsettings import StringDict, PathDict
+from morfdict import StringDict, PathDict
 
 
 class StringDictTest(TestCase):

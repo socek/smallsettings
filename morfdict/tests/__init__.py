@@ -1,13 +1,13 @@
 import unittest
 import logging
 
-from smallsettings.tests import settings
-from smallsettings.tests import factory
+from morfdict.tests import morfdict
+from morfdict.tests import factory
 
 all_test_cases = [
-    settings.StringDictTest,
-    settings.PathDictTest,
-    settings.MorfingTest,
+    morfdict.StringDictTest,
+    morfdict.PathDictTest,
+    morfdict.MorfingTest,
 
     factory.FactoryTest,
 ]
@@ -18,7 +18,7 @@ def get_all_test_suite():
         level=logging.INFO,
         format="%(asctime)-15s:%(message)s",
         filename='test.log')
-    logging.getLogger('smallsettings').info('\n\t*** TESTING STARTED ***')
+    logging.getLogger('morfdict').info('\n\t*** TESTING STARTED ***')
     suite = unittest.TestLoader()
     prepered_all_test_cases = []
     for test_case in all_test_cases:

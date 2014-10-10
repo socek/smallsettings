@@ -1,8 +1,8 @@
 import sys
 from mock import patch, MagicMock
 
-from smallsettings.tests.base import TestCase
-from smallsettings import Factory
+from morfdict.tests.base import TestCase
+from morfdict import Factory
 
 
 class FactoryTest(TestCase):

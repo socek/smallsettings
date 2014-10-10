@@ -7,13 +7,13 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 if __name__ == '__main__':
-    setup(name='SmallSettings',
-          version='0.2.2',
+    setup(name='MorfDict',
+          version='0.3',
           author='Dominik "Socek" Długajczy',
           author_email='msocek@gmail.com',
-          test_suite='smallsettings.tests.get_all_test_suite',
+          test_suite='morfdict.tests.get_all_test_suite',
           packages=find_packages(),
-          package_data={'smallsettings': ['README.md']},
-          long_description=read('smallsettings/README.md'),
-          description = "Simple settings functions for projects.",
+          package_data={'morfdict': ['README.md']},
+          long_description=read('morfdict/README.md'),
+          description="Simple settings functions for projects.",
           )

@@ -1,6 +1,6 @@
 from os.path import dirname, abspath
 
-from smallsettings.settings import StringDict, PathDict
+from morfdict import StringDict, PathDict
 
 
 class Factory(object):
