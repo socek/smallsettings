@@ -1,72 +1,70 @@
 import os
 
 
-class Settings(dict):
+class MorfDict(dict):
 
-    def __init__(self, data={}):
-        super(Settings, self).__init__(data)
+    def __init__(self, data={}, morf=None):
+        super(MorfDict, self).__init__()
+        self._morf = morf or {}
 
-    def __getitem__(self, key):
-        value = super(Settings, self).__getitem__(key)
-        if type(value) == str:
-            return value % self
-        else:
-            return value
-
-    def merged(self, settings):
-        """Gets Merged object of this object and another one."""
-        return Merged([self, settings])
-
-
-class Paths(Settings):
-
-    def __init__(self, data={}):
-        super(Paths, self).__init__()
         for name, value in data.items():
             self[name] = value
 
     def __getitem__(self, key):
-        parsed_values = []
-        for value in super(Paths, self).__getitem__(key):
-            parsed_values.append(
-                value % self
-            )
-        return os.path.join(*parsed_values)
+        value = super(MorfDict, self).__getitem__(key)
+        method = self._morf.get(key, self._default_morf)
+        return method(self, value)
+
+    def _default_morf(self, obj, value):
+        return value
 
     def __setitem__(self, key, value):
-        if type(value) not in (list, tuple):
+        if type(value) is dict:
+            value = self.__class__(value)
+        return super(MorfDict, self).__setitem__(key, value)
+
+    def set_morf(self, key, morf):
+        self._morf[key] = morf
+
+    def del_morf(self, key):
+        self._morf.pop(key)
+
+    def get_morf(self, key):
+        return self._morf[key]
+
+
+class StringDict(MorfDict):
+
+    def _default_morf(self, obj, value):
+        if type(value) is str:
+            return value % self
+        else:
+            return value
+
+
+class PathDict(StringDict):
+
+    def _default_morf(self, obj, values):
+        if type(values) in (list, tuple):
+            parsed_values = []
+            for value in values:
+                parsed_values.append(
+                    value % self
+                )
+            return os.path.join(*parsed_values)
+        else:
+            return values
+
+    def __setitem__(self, key, value):
+        if type(value) is str:
             value = [value, ]
-        return super(Paths, self).__setitem__(key, value)
+        return super(PathDict, self).__setitem__(key, value)
 
-    def merged(self, settings):
-        """Gets Merged object of this object and another one."""
-        return Merged([self, settings])
+    def set_path(self, name, dirname, basename):
+        if type(basename) not in (list, tuple):
+            basename = [basename]
 
-
-class Merged(object):
-
-    def __init__(self, settings_list):
-        self.settings_list = settings_list
-
-    def __getitem__(self, key):
-        for settings in self.settings_list:
-            if key in settings:
-                return settings[key]
-        raise KeyError(key)
-
-    def __contains__(self, key):
-        contains = False
-        for settings in self.settings_list:
-            contains |= key in settings
-        return contains
-
-    def merge(self, settings):
-        """Add another Settings or Paths object to the list."""
-        self.settings_list.append(settings)
-
-    def to_dict(self):
-        data = {}
-        for item in self.settings_list:
-            for name in item:
-                data[name] = item[name]
-        return data
+        if dirname is None:
+            self[name] = basename
+        else:
+            self[name] = ['%%(%s)s' % (dirname,)] + basename

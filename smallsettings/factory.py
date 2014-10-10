@@ -1,6 +1,6 @@
 from os.path import dirname, abspath
 
-from smallsettings.settings import Settings, Paths
+from smallsettings.settings import StringDict, PathDict
 
 
 class Factory(object):
@@ -43,15 +43,15 @@ class Factory(object):
         Initialize settings and paths with data. Add 'project_path' to paths
         depending on main module.
         """
-        self.settings = Settings(settings)
-        self.paths = Paths(paths)
+        self.settings = StringDict(settings)
+        self.paths = PathDict(paths)
 
         mainmodule = self._import_wrapper(self.main_modulepath)
 
         self.paths['project_path'] = dirname(abspath(mainmodule.__file__))
 
-    def make_settings(self, settings={}, paths={}, additional_modules=(('local', False),)):
-        """Make Settings and Paths from modules.
+    def make_settings(self, settings={}, paths={}, additional_modules=None):
+        """Make StringDict and PathDict from modules.
 
         Keyword arguments:
         settings -- default settings
@@ -59,6 +59,7 @@ class Factory(object):
         additional_modules -- list of tuples of additional modules. First element
         in tuple is a module name, second is bool. If setted to true, method will
         raise ImportError on missing module."""
+        additional_modules = additional_modules or (('local', False),)
         self.init_data(settings, paths)
 
         self.run_module('default')

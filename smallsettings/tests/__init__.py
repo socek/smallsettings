@@ -5,17 +5,19 @@ from smallsettings.tests import settings
 from smallsettings.tests import factory
 
 all_test_cases = [
-    settings.SettingsTest,
-    settings.PathsTest,
-    settings.MergedTest,
+    settings.StringDictTest,
+    settings.PathDictTest,
+    settings.MorfingTest,
 
     factory.FactoryTest,
 ]
 
 
 def get_all_test_suite():
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)-15s:%(message)s", filename='test.log')
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)-15s:%(message)s",
+        filename='test.log')
     logging.getLogger('smallsettings').info('\n\t*** TESTING STARTED ***')
     suite = unittest.TestLoader()
     prepered_all_test_cases = []
