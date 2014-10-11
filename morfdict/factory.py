@@ -9,7 +9,8 @@ class Factory(object):
         """
         Keyword arguments:
         main_modulepath -- import path to a main module
-        settings_modulepath -- import path to a settings module within main module
+        settings_modulepath -- import path to a settings module within main
+            module
         """
         self.main_modulepath = main_modulepath
         self.settings_modulepath = settings_modulepath
@@ -26,12 +27,14 @@ class Factory(object):
         return self._import_wrapper(modulepath)
 
     def run_module(self, name):
-        """Import settings from a module. Raise ImportError on missing module."""
+        """Import settings from a module. Raise ImportError on missing module.
+        """
         module = self.import_module(name)
         module.make_settings(self.settings, self.paths)
 
     def run_module_without_errors(self, name):
-        """Import settings from a module. Do not raise ImportError on missing module."""
+        """Import settings from a module. Do not raise ImportError on missing
+        module."""
         try:
             module = self.import_module(name)
             module.make_settings(self.settings, self.paths)
@@ -39,8 +42,7 @@ class Factory(object):
             pass
 
     def init_data(self, settings, paths):
-        """
-        Initialize settings and paths with data. Add 'project_path' to paths
+        """Initialize settings and paths with data. Add 'project_path' to paths
         depending on main module.
         """
         self.settings = StringDict(settings)
@@ -56,9 +58,10 @@ class Factory(object):
         Keyword arguments:
         settings -- default settings
         paths -- default paths
-        additional_modules -- list of tuples of additional modules. First element
-        in tuple is a module name, second is bool. If setted to true, method will
-        raise ImportError on missing module."""
+        additional_modules -- list of tuples of additional modules. First
+        element in tuple is a module name, second is bool. If setted to true,
+        method will raise ImportError on missing module.
+        """
         additional_modules = additional_modules or (('local', False),)
         self.init_data(settings, paths)
 

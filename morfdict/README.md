@@ -1,66 +1,61 @@
 MorfDict
 ========
 
-In many projects (web applicatons in particular) there is a need of making a settings. For application we need a 3 types of settings.
-* Application settings (for example: application name)
-* Envoritment settings (for example: url to database)
-* Dynamic settings (for example: what ads to we show today)
+MorfDict is a dict like object, which convers data late on the fly.
 
-MorfDict provides solusion for the first 2 types of settings (the third one should be stored in the database).
-The second problem with settings is wrapping some settings. Sometimes you have to wrap var from app settings in envoritment settings, and sometime you have to do the oposit. MorfDict has a solution for this.
+    >> from morfdict import MorfDict
+    >> data = MorfDict()
+    >> data['first'] = 'my data'
+    >> data['first']
+    'my data'
+    >> data.set_morf('first', lambda obj, value: '*' + value + '*')
+    >> data['first']
+    '*my data*'
 
-Settings classes
-========
-First we look at the "Settings" class.
+If you want to make your own default morf method, just ovveride _default_morf
+method.
 
-    >> from smallsettings import Settings
-    >> settings = Settings({'base_settings': 1})
-    >> settings['base_settings']
-    1
+    >> class MyMorf(MorfDict):
+    >>    def _default_morf(self, obj, value):
+    >>        return '*' + value + '*'
 
-Pretty normal dict. But it have a special features:
+StringDict class
+================
+StringDict is MorfDict whith default interpolation for itself.
 
-    >> settings['something'] = 'new settings %(base_settings)s'
-    >> settings['something']
-    'new settings 1'
+    >> from morfdict import StringDict
+    >> data = StringDict()
+    >> data['first'] = 'one'
+    >> data['second'] = '%(first)s two'
+    >> data['second']
+    'one two'
 
-We can now ovveride the 'base_settings':
+PathDict class
+==============
+PathDict is designed for storing paths.
 
-    >> settings['base_settings'] = 2
-    >> settings['something']
-    'new settings 2'
-
-Second, the "Paths" class.
-
-    >> from smallsettings import Paths
-    >> paths = Paths({'base' : '/tmp'})
-    >> paths['base']
-    '/tmp'
-    >> paths['home'] = '/home'
+    >> from morfdict import PathDict
+    >> paths = PathDict({'base' : '/tmp'})
+    >> paths['home'] = ['%(base)s', 'home', 'myname']
     >> paths['home']
-    '/home'
+    '/tmp/home/myname'
 
-But using previous var is slite different, because the Paths class use os.path.join:
+Or you can make this:
 
-    >> paths['me'] = ['%(home)s', 'me']
-    >> paths['me']
-    '/home/me'
+    >> from morfdict import PathDict
+    >> paths = PathDict({'base' : '/tmp'})
+    >> paths.set_path('main', 'base', 'home')
+    >> paths.set_path('home', 'main', 'myname')
+    >> paths['home']
+    '/tmp/home/myname'
 
-If we want to "merge" settings and paths, we co do this:
-
-    >> merged = settings.merged(paths)
-    >> merged['something']
-    'new settings 2'
-    >> merged['me']
-    '/home/me'
-
-Factory
-=======
+Factory class
+=============
 
 If we want to use 'modulename.settings' where 'modulename' is our main module and
 'settings' is our settins module.
 
-    >> from smallsettings import Factory
+    >> from morfdict import Factory
     >> factory = Factory('modulename', 'settings')
     >> settings, paths = factory.make_settings()
 
