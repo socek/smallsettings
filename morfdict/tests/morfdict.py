@@ -81,3 +81,59 @@ class MorfingTest(TestCase):
         data.set_morf('key', simple_morf)
         self.assertEqual('value***', data['key'])
         self.assertEqual('v2', data['key2'])
+
+
+class ParrentsTest(TestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.parent1 = StringDict({'parent_key': 'parent1'})
+        self.parent2 = StringDict({'parent2_key': 'parent2'})
+        self.child = StringDict({'child_key': 'child1'})
+        self.child['morf_parent'] = '%(parent_key)s morf'
+        self.child['morf2_parent'] = '%(parent2_key)s morf'
+        self.child['morf3_parent'] = '%(parent3_key)s morf'
+
+        self.child.append_parent(self.parent1)
+        self.parent2['child'] = self.child
+
+        self.parent1['mychild'] = self.child
+        self.parent1['morf_child'] = '%(mychild:morf_parent)s morf child'
+
+    def test_morf_parent(self):
+        self.assertEqual('parent1 morf', self.child['morf_parent'])
+        self.assertEqual('parent2 morf', self.child['morf2_parent'])
+
+    def test_morf_error(self):
+        self.assertRaises(KeyError, self.child.get, 'morf3_parent')
+
+    def test_morf_child(self):
+        self.assertEqual('parent1 morf morf child', self.parent1['morf_child'])
+
+    def test_get_default_error(self):
+        self.assertRaises(KeyError, self.child.get, 'morf3_parent', 'default')
+
+    def test_get_default_error(self):
+        self.assertEqual('default', self.child.get('morf4_parent', 'default'))
+
+    def test_to_dict(self):
+        paths = PathDict()
+        paths.append_parent(self.parent1, 'paths')
+        paths['root'] = ['/tmp', 'elo']
+        paths.set_path('my', 'root', 'self')
+        del self.child['morf3_parent']
+
+        self.assertEqual({
+            'morf_child': 'parent1 morf morf child',
+            'mychild': {
+                'child_key': 'child1',
+                'morf2_parent': 'parent2 morf',
+                'morf_parent': 'parent1 morf'},
+            'parent_key': 'parent1',
+            'paths': {
+                'my': '/tmp/elo/self',
+                'root': '/tmp/elo'}
+        }, self.parent1.to_dict())
+
+    def test_setter(self):
+        self.assertEqual(True, self.parent2 in self.child._parents)
