@@ -1,6 +1,10 @@
 import os
 
 
+class NoDefault:
+    pass
+
+
 class MorfDict(dict):
 
     def __init__(self, data={}, morf=None):
@@ -76,7 +80,7 @@ class MorfDict(dict):
         try:
             return self[key]
         except KeyError as error:
-            if key == error.args[0] and default:
+            if key == error.args[0] and default is not NoDefault:
                 return default
             else:
                 raise

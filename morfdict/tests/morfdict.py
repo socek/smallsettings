@@ -113,8 +113,8 @@ class ParrentsTest(TestCase):
     def test_get_default_error(self):
         self.assertRaises(KeyError, self.child.get, 'morf3_parent', 'default')
 
-    def test_get_default_error(self):
-        self.assertEqual('default', self.child.get('morf4_parent', 'default'))
+    def test_get_default(self):
+        self.assertEqual([], self.child.get('jinja2.extensions', []))
 
     def test_to_dict(self):
         paths = PathDict()
