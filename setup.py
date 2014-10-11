@@ -14,8 +14,8 @@ if __name__ == '__main__':
         author_email='msocek@gmail.com',
         test_suite='morfdict.tests.get_all_test_suite',
         packages=find_packages(),
-        package_data={'morfdict': ['README.md']},
-        long_description=read('morfdict/README.md'),
+        package_data={'morfdict': ['README.rst']},
+        long_description=read('morfdict/README.rst'),
         description=(
             "MorfDict is a dict like object, which convers data on the fly."
         ),

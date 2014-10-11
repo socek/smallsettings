@@ -1,1 +1,1 @@
-https://github.com/socek/smallsettings/blob/master/morfdict/README.md
+https://github.com/socek/smallsettings/blob/master/morfdict/README.rst
