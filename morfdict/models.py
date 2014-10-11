@@ -12,14 +12,14 @@ class MorfDict(dict):
             self[name] = value
 
     def __getitem__(self, key):
-        left, right = self.split_key(key)
+        left, right = self._split_key(key)
         value = self._get_from_self_or_parent(left)
         if right:
             value = value[right]
         method = self._morf.get(key, self._default_morf)
         return method(self, value)
 
-    def split_key(self, huge_key):
+    def _split_key(self, huge_key):
         try:
             left, right = huge_key.split(':', 1)
             return left, right
@@ -35,6 +35,7 @@ class MorfDict(dict):
         raise KeyError(key)
 
     def append_parent(self, parent, key=None):
+        """Add parent to this object."""
         self._parents.append(parent)
         if key:
             parent[key] = self
@@ -50,15 +51,19 @@ class MorfDict(dict):
         return super(MorfDict, self).__setitem__(key, value)
 
     def set_morf(self, key, morf):
+        """Set morf method for this key."""
         self._morf[key] = morf
 
     def del_morf(self, key):
+        """Delete morf method for this key."""
         self._morf.pop(key)
 
     def get_morf(self, key):
+        """Get morf method for this key."""
         return self._morf[key]
 
     def to_dict(self):
+        """Create simple dict object from this object."""
         data = {}
         for key in list(self):
             value = self[key]
@@ -105,6 +110,13 @@ class PathDict(StringDict):
         return super(PathDict, self).__setitem__(key, value)
 
     def set_path(self, name, dirname, basename):
+        """Sets path.
+
+        Arguments:
+        * name - name of path
+        * dirname - parent name of path
+        * basename - relative path
+        """
         if type(basename) not in (list, tuple):
             basename = [basename]
 
