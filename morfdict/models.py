@@ -65,6 +65,7 @@ class MorfDict(dict):
             # insert data to it
             if left not in self:
                 data = self.__class__()
+                data.append_parent(self)
             else:
                 data = self[left]
             data[right] = value

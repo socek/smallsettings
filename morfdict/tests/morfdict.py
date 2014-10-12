@@ -59,6 +59,14 @@ class AccessorsTest(TestCase):
         self.assertEqual('20', self.data['two']['mix'])
         self.assertEqual('25', self.data['two']['second'])
 
+    def test_paths(self):
+        paths = PathDict()
+
+        paths['one'] = 'xxx'
+        paths['three:mix'] = ['%(one)s', '10', '15']
+        self.assertEqual('xxx/10/15', paths['three:mix'])
+        self.assertEqual('xxx/10/15', paths['three']['mix'])
+
 
 class PathDictTest(TestCase):
 
