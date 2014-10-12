@@ -137,3 +137,12 @@ class ParrentsTest(TestCase):
 
     def test_setter(self):
         self.assertEqual(True, self.parent2 in self.child._parents)
+
+    def test_items(self):
+        data = list(self.child.items())
+        data.sort()
+        expected_data = [
+            ('child_key', 'child1'),
+            ('morf2_parent', 'parent2 morf'),
+            ('morf_parent', 'parent1 morf')]
+        self.assertEqual(expected_data, data)

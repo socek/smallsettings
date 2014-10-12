@@ -85,6 +85,13 @@ class MorfDict(dict):
             else:
                 raise
 
+    def items(self):
+        for key in self.keys():
+            try:
+                yield (key, self[key])
+            except KeyError:
+                continue
+
 
 class StringDict(MorfDict):
 
