@@ -35,6 +35,31 @@ class StringDictTest(TestCase):
         self.assertFalse('name2' in settings)
 
 
+class AccessorsTest(TestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.data = StringDict(
+            {'name': 'one', 'two': {'mix': '10', 'second': '25'}})
+
+    def test_simple_get(self):
+        self.assertEqual('10', self.data['two:mix'])
+        self.assertEqual('10', self.data['two']['mix'])
+
+    def test_deep_setter(self):
+        self.data['three:mix'] = '15'
+        self.assertEqual('15', self.data['three:mix'])
+        self.assertEqual('15', self.data['three']['mix'])
+
+    def test_deep_setter_already_made(self):
+        self.data['two:mix'] = '20'
+
+        self.assertEqual('20', self.data['two:mix'])
+        self.assertEqual('25', self.data['two:second'])
+        self.assertEqual('20', self.data['two']['mix'])
+        self.assertEqual('25', self.data['two']['second'])
+
+
 class PathDictTest(TestCase):
 
     def test_simple_assign(self):

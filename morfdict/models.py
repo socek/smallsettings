@@ -48,11 +48,36 @@ class MorfDict(dict):
         return value
 
     def __setitem__(self, key, value):
-        if type(value) is dict:
-            value = self.__class__(value)
-        if isinstance(value, MorfDict):
-            value.append_parent(self)
-        return super(MorfDict, self).__setitem__(key, value)
+        def convert_dict_to_morfdict_if_avalible(value):
+            if type(value) is dict:
+                return self.__class__(value)
+            return value
+
+        def append_parent_if_avalible(value):
+            if isinstance(value, MorfDict):
+                value.append_parent(self)
+
+        def make_set(key, value):
+            return super(MorfDict, self).__setitem__(key, value)
+
+        def set_child_morfdict(left, right, value):
+            # if there is key with ':' it should make child morf dict and
+            # insert data to it
+            if left not in self:
+                data = self.__class__()
+            else:
+                data = self[left]
+            data[right] = value
+            return make_set(left, data)
+
+        value = convert_dict_to_morfdict_if_avalible(value)
+        append_parent_if_avalible(value)
+
+        left, right = self._split_key(key)
+        if right is None:
+            return make_set(key, value)
+        else:
+            return set_child_morfdict(left, right, value)
 
     def set_morf(self, key, morf):
         """Set morf method for this key."""
