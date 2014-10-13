@@ -67,6 +67,14 @@ class AccessorsTest(TestCase):
         self.assertEqual('xxx/10/15', paths['three:mix'])
         self.assertEqual('xxx/10/15', paths['three']['mix'])
 
+    def test_cross_nameing(self):
+        paths = PathDict()
+        paths['project:home'] = 'myho'
+        paths['project:application'] = ['%(project:home)s', 'application']
+        paths['application:tests'] = ['%(project:application)s', 'tests']
+
+        self.assertEqual('myho/application/tests', paths['application:tests'])
+
 
 class PathDictTest(TestCase):
 
@@ -179,3 +187,25 @@ class ParrentsTest(TestCase):
             ('morf2_parent', 'parent2 morf'),
             ('morf_parent', 'parent1 morf')]
         self.assertEqual(expected_data, data)
+
+    def test_merge(self):
+        newsettings = StringDict()
+        newsettings['my_data'] = {}
+        newsettings['my_data']['elf'] = '10'
+        newsettings['mychild:second'] = '30'
+        del self.child['morf3_parent']
+
+        newsettings.merge(self.parent1)
+
+        self.assertEqual({
+            'my_data': {
+                'elf': '10',
+            },
+            'morf_child': 'parent1 morf morf child',
+            'mychild': {
+                'child_key': 'child1',
+                'morf2_parent': 'parent2 morf',
+                'morf_parent': 'parent1 morf',
+                'second': '30'},
+            'parent_key': 'parent1'
+        }, newsettings.to_dict())

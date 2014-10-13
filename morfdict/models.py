@@ -30,6 +30,9 @@ class MorfDict(dict):
         except:
             return huge_key, None
 
+    def _raw_get(self, key):
+        return super().__getitem__(key)
+
     def _get_from_self_or_parent(self, key):
         for obj in [super(MorfDict, self)] + self._parents:
             try:
@@ -117,6 +120,18 @@ class MorfDict(dict):
                 yield (key, self[key])
             except KeyError:
                 continue
+
+    def merge(self, data):
+        for key in data.keys():
+            value = data[key]
+            if isinstance(value, MorfDict):
+                if key in self:
+                    self[key].merge(value)
+                else:
+                    self[key] = value
+            else:
+                self[key] = data._raw_get(key)
+        self._parents += data._parents
 
 
 class StringDict(MorfDict):
