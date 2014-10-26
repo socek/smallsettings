@@ -8,6 +8,10 @@ class NoDefault:
 class MorfDict(dict):
 
     def __init__(self, data={}, morf=None):
+        """
+        :param data: dict of normal data
+        :param morf: dict of morf methods
+        """
         super(MorfDict, self).__init__()
         self._morf = morf or {}
         self._parents = []
@@ -135,6 +139,7 @@ class MorfDict(dict):
 
 
 class StringDict(MorfDict):
+    """Class which tries to interpolate itself on morf."""
 
     def _default_morf(self, obj, value):
         if type(value) is str:
@@ -144,6 +149,7 @@ class StringDict(MorfDict):
 
 
 class PathDict(StringDict):
+    """Class designed to store paths."""
 
     def _default_morf(self, obj, values):
         if type(values) in (list, tuple):
@@ -164,10 +170,9 @@ class PathDict(StringDict):
     def set_path(self, name, dirname, basename):
         """Sets path.
 
-        Arguments:
-        * name - name of path
-        * dirname - parent name of path
-        * basename - relative path
+        :param name: name of path
+        :param dirname: parent name of path
+        :param basename: relative path
         """
         if type(basename) not in (list, tuple):
             basename = [basename]

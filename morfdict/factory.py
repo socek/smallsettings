@@ -4,13 +4,13 @@ from morfdict import StringDict, PathDict
 
 
 class Factory(object):
+    """Loader for settings files."""
 
     def __init__(self, main_modulepath, settings_modulepath='settings'):
         """
-        Keyword arguments:
-        main_modulepath -- import path to a main module
-        settings_modulepath -- import path to a settings module within main
-            module
+        :param main_modulepath: import path to a main module
+        :param settings_modulepath: import path to a settings module within
+            main module
         """
         self.main_modulepath = main_modulepath
         self.settings_modulepath = settings_modulepath
@@ -55,12 +55,12 @@ class Factory(object):
     def make_settings(self, settings={}, paths={}, additional_modules=None):
         """Make StringDict and PathDict from modules.
 
-        Keyword arguments:
-        settings -- default settings
-        paths -- default paths
-        additional_modules -- list of tuples of additional modules. First
-        element in tuple is a module name, second is bool. If setted to true,
-        method will raise ImportError on missing module.
+        :param settings: default settings
+        :param paths: default paths
+        :param additional_modules: list of tuples of additional modules. First
+        :param element: in tuple is a module name, second is bool. If setted to
+            true,
+        :param method: will raise ImportError on missing module.
         """
         additional_modules = additional_modules or (('local', False),)
         self.init_data(settings, paths)

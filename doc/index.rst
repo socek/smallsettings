@@ -16,12 +16,8 @@ Overall
    :maxdepth: 3
 
    intro
-
-Api
-===
-
-.. toctree::
-   :maxdepth: 2
+   tutorial
+   api/index
 
 
 Indices and tables
