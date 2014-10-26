@@ -193,19 +193,22 @@ class ParrentsTest(TestCase):
         newsettings['my_data'] = {}
         newsettings['my_data']['elf'] = '10'
         newsettings['mychild:second'] = '30'
-        del self.child['morf3_parent']
 
         newsettings.merge(self.parent1)
+        newsettings['parent_key'] = 'newpar'
+        newsettings['parent3_key'] = 'par3'
 
         self.assertEqual({
             'my_data': {
                 'elf': '10',
             },
-            'morf_child': 'parent1 morf morf child',
+            'morf_child': 'newpar morf morf child',
             'mychild': {
                 'child_key': 'child1',
                 'morf2_parent': 'parent2 morf',
-                'morf_parent': 'parent1 morf',
+                'morf3_parent': 'par3 morf',
+                'morf_parent': 'newpar morf',
                 'second': '30'},
-            'parent_key': 'parent1'
+            'parent_key': 'newpar',
+            'parent3_key': 'par3',
         }, newsettings.to_dict())

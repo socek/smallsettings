@@ -127,14 +127,14 @@ class MorfDict(dict):
 
     def merge(self, data):
         for key in data.keys():
-            value = data[key]
+            value = data._raw_get(key)
             if isinstance(value, MorfDict):
                 if key in self:
                     self[key].merge(value)
                 else:
                     self[key] = value
             else:
-                self[key] = data._raw_get(key)
+                self[key] = value
         self._parents += data._parents
 
 
