@@ -42,3 +42,12 @@ MorfDict package is in pypi, so you can just type this:
 ::
 
     >> (sudo) pip install morfdict
+
+1.3 Source
+==========
+
+https://github.com/socek/smallsettings
+
+::
+
+    >> git clone https://github.com/socek/smallsettings.git
