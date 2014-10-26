@@ -2,7 +2,7 @@
 2. Tutorial
 ===========
 
-2.1 Usign MorfDict
+2.1 Using MorfDict
 ==================
 
 MorfDict is a dict which converts data late on the fly.
