@@ -1,3 +1,5 @@
+from mock import patch
+
 from .base import TestCase
 from morfdict import StringDict, PathDict
 
@@ -107,6 +109,26 @@ class PathDictTest(TestCase):
     def test_contains_false(self):
         paths = PathDict({'name': 'value'})
         self.assertFalse('name2' in paths)
+
+    @patch('morfdict.models.import_module')
+    def test_get_path_dotted(self, mimport_module):
+        mimport_module.return_value.__file__ = 'module/path/__init__.py'
+
+        paths = PathDict()
+        self.assertEqual(
+            paths.get_path_dotted('test.me:something/elo'),
+            'module/path/something/elo',
+        )
+
+    @patch('morfdict.models.import_module')
+    def test_get_path_dotted_no_file(self, mimport_module):
+        mimport_module.return_value.__file__ = 'module/path/__init__.py'
+
+        paths = PathDict()
+        self.assertEqual(
+            paths.get_path_dotted('test.me'),
+            'module/path/__init__.py',
+        )
 
 
 class MorfingTest(TestCase):

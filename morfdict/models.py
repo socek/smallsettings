@@ -1,4 +1,5 @@
-import os
+from os import path
+from importlib import import_module
 
 
 class NoDefault:
@@ -139,6 +140,7 @@ class MorfDict(dict):
 
 
 class StringDict(MorfDict):
+
     """Class which tries to interpolate itself on morf."""
 
     def _default_morf(self, obj, value):
@@ -149,6 +151,7 @@ class StringDict(MorfDict):
 
 
 class PathDict(StringDict):
+
     """Class designed to store paths."""
 
     def _default_morf(self, obj, values):
@@ -158,7 +161,7 @@ class PathDict(StringDict):
                 parsed_values.append(
                     value % self
                 )
-            return os.path.join(*parsed_values)
+            return path.join(*parsed_values)
         else:
             return values
 
@@ -181,3 +184,12 @@ class PathDict(StringDict):
             self[name] = basename
         else:
             self[name] = ['%%(%s)s' % (dirname,)] + basename
+
+    def get_path_dotted(self, module):
+        args = module.split(':')
+        module = import_module(args[0])
+        if args[1:]:
+            dirpath = path.dirname(module.__file__)
+            return path.join(dirpath, *args[1:])
+        else:
+            return module.__file__
