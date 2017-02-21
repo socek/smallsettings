@@ -1,5 +1,9 @@
-from os import path
+from collections import namedtuple
 from importlib import import_module
+from os import path
+from os import sep
+
+PathElement = namedtuple('PathElement', ['parent', 'name', 'is_root'])
 
 
 class NoDefault:
@@ -140,7 +144,6 @@ class MorfDict(dict):
 
 
 class StringDict(MorfDict):
-
     """Class which tries to interpolate itself on morf."""
 
     def _default_morf(self, obj, value):
@@ -151,7 +154,6 @@ class StringDict(MorfDict):
 
 
 class PathDict(StringDict):
-
     """Class designed to store paths."""
 
     def _default_morf(self, obj, values):
@@ -193,3 +195,36 @@ class PathDict(StringDict):
             return path.join(dirpath, *args[1:])
         else:
             return module.__file__
+
+
+class Paths(object):
+
+    def __init__(self):
+        self.paths = dict()
+
+    def get(self, key):
+        element = self.paths[key]
+        if type(element) is PathElement:
+            if element.parent:
+                parent = self.get(element.parent)
+            else:
+                parent = ''
+            if element.is_root:
+                parent = sep + parent
+            return path.join(parent, *element.name)
+        else:
+            return element(self)
+
+    def set(self, key, name, parent=None, is_root=False):
+        if not isinstance(name, (list, tuple)):
+            name = [name]
+        self.paths[key] = PathElement(parent, name, is_root)
+
+    def set_generator(self, key, generator):
+        self.paths[key] = generator
+
+    def to_dict(self):
+        data = dict()
+        for key in self.paths:
+            data[key] = self.get(key)
+        return data

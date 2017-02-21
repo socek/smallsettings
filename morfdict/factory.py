@@ -1,6 +1,8 @@
-from os.path import dirname, abspath
+from os.path import abspath
+from os.path import dirname
 
-from morfdict import StringDict, PathDict
+from morfdict.models import PathDict
+from morfdict.models import StringDict
 
 
 class Factory(object):

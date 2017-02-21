@@ -1,7 +1,10 @@
 from mock import patch
+from os import sep
 
 from .base import TestCase
-from morfdict import StringDict, PathDict
+from morfdict import PathDict
+from morfdict import Paths
+from morfdict import StringDict
 
 
 class StringDictTest(TestCase):
@@ -234,3 +237,47 @@ class ParrentsTest(TestCase):
             'parent_key': 'newpar',
             'parent3_key': 'par3',
         }, newsettings.to_dict())
+
+
+class PathsTest(TestCase):
+
+    def test_get_set(self):
+        paths = Paths()
+        paths.set('mypath', 'elo')
+        paths.set('mypath2', 'elo2', 'mypath')
+        paths.set('mypath3', 'elo3', None, True)
+
+        self.assertEqual('elo', paths.get('mypath'))
+        self.assertEqual('elo' + sep + 'elo2', paths.get('mypath2'))
+        self.assertEqual(sep + 'elo3', paths.get('mypath3'))
+
+    def test_set_generator(self):
+        paths = Paths()
+        paths.set('mypath', 'elo')
+        paths.set_generator(
+            'myelo', lambda parent: parent.get('mypath') + 'two')
+
+        self.assertEqual(paths.get('myelo'), 'elotwo')
+
+    def test_set_long_path(self):
+        paths = Paths()
+        paths.set('mypath', ['elo', 'some', 'thing'])
+
+        self.assertEqual(paths.get('mypath'), 'elo{0}some{0}thing'.format(sep))
+
+    def test_to_dict(self):
+        paths = Paths()
+        paths.set('Nfirst', 'one')
+        paths.set('Nsecond', 'two', 'Nfirst')
+        paths.set('Nthird', 'three', is_root=True)
+        paths.set('Nfourth', 'four', 'Nthird')
+        paths.set_generator(
+            'Nfifth', lambda parent: parent.get('Nfourth') + 'five')
+
+        self.assertEqual(paths.to_dict(), {
+            'Nfirst': 'one',
+            'Nsecond': 'one{0}two'.format(sep),
+            'Nthird': '{0}three'.format(sep),
+            'Nfourth': '{0}three{0}four'.format(sep),
+            'Nfifth': '{0}three{0}fourfive'.format(sep),
+        })
