@@ -3,7 +3,7 @@ from importlib import import_module
 from os import path
 from os import sep
 
-PathElement = namedtuple('PathElement', ['parent', 'name', 'is_root'])
+PathElement = namedtuple('PathElement', ['parent', 'value', 'is_root'])
 
 
 class NoDefault:
@@ -153,57 +153,16 @@ class StringDict(MorfDict):
             return value
 
 
-class PathDict(StringDict):
-    """Class designed to store paths."""
-
-    def _default_morf(self, obj, values):
-        if type(values) in (list, tuple):
-            parsed_values = []
-            for value in values:
-                parsed_values.append(
-                    value % self
-                )
-            return path.join(*parsed_values)
-        else:
-            return values
-
-    def __setitem__(self, key, value):
-        if type(value) is str:
-            value = [value, ]
-        return super(PathDict, self).__setitem__(key, value)
-
-    def set_path(self, name, dirname, basename):
-        """Sets path.
-
-        :param name: name of path
-        :param dirname: parent name of path
-        :param basename: relative path
-        """
-        if type(basename) not in (list, tuple):
-            basename = [basename]
-
-        if dirname is None:
-            self[name] = basename
-        else:
-            self[name] = ['%%(%s)s' % (dirname,)] + basename
-
-    def get_path_dotted(self, module):
-        args = module.split(':')
-        module = import_module(args[0])
-        if args[1:]:
-            dirpath = path.dirname(module.__file__)
-            return path.join(dirpath, *args[1:])
-        else:
-            return module.__file__
-
-
 class Paths(object):
 
     def __init__(self):
         self.paths = dict()
 
-    def get(self, key):
-        element = self.paths[key]
+    def get(self, name):
+        """
+        Get path by name.
+        """
+        element = self.paths[name]
         if type(element) is PathElement:
             if element.parent:
                 parent = self.get(element.parent)
@@ -211,20 +170,48 @@ class Paths(object):
                 parent = ''
             if element.is_root:
                 parent = sep + parent
-            return path.join(parent, *element.name)
+            return path.join(parent, *element.value)
         else:
             return element(self)
 
-    def set(self, key, name, parent=None, is_root=False):
-        if not isinstance(name, (list, tuple)):
-            name = [name]
-        self.paths[key] = PathElement(parent, name, is_root)
+    def set(self, name, value, parent=None, is_root=False):
+        """
+        Set path.
+            - name: normalized name of the path
+            - value: filename, dirname or list or those
+            - parent: normalized name of parent path
+            - is_root: if true, this path will start with heading slash
+        """
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+        self.paths[name] = PathElement(parent, value, is_root)
 
-    def set_generator(self, key, generator):
-        self.paths[key] = generator
+    def set_generator(self, name, generator):
+        """
+        Set path method generator.
+            - name: normalized name of the path
+            - generator: generation function which accepts this object as first
+                argument
+        """
+        self.paths[name] = generator
 
     def to_dict(self):
+        """
+        Generates all paths into dict object.
+        """
         data = dict()
-        for key in self.paths:
-            data[key] = self.get(key)
+        for name in self.paths:
+            data[name] = self.get(name)
         return data
+
+    def get_path_from_module(self, module):
+        """
+        Get path from module.
+        """
+        args = module.split(':')
+        module = import_module(args[0])
+        if args[1:]:
+            dirpath = path.dirname(module.__file__)
+            return path.join(dirpath, *args[1:])
+        else:
+            return module.__file__

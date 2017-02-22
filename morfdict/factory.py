@@ -1,7 +1,7 @@
 from os.path import abspath
 from os.path import dirname
 
-from morfdict.models import PathDict
+from morfdict.models import Paths
 from morfdict.models import StringDict
 
 
@@ -43,16 +43,16 @@ class Factory(object):
         except ImportError:
             pass
 
-    def init_data(self, settings, paths):
-        """Initialize settings and paths with data. Add 'project_path' to paths
+    def init_data(self, settings):
+        """Initialize settings with data. Add 'module_root' to paths
         depending on main module.
         """
         self.settings = StringDict(settings)
-        self.paths = PathDict(paths)
+        self.paths = Paths()
 
         mainmodule = self._import_wrapper(self.main_modulepath)
 
-        self.paths['project_path'] = dirname(abspath(mainmodule.__file__))
+        self.paths.set('module_root', dirname(abspath(mainmodule.__file__)))
 
     def make_settings(self, settings={}, paths={}, additional_modules=None):
         """Make StringDict and PathDict from modules.

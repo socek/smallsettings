@@ -6,7 +6,6 @@ from morfdict.tests import factory
 
 all_test_cases = [
     morfdict.StringDictTest,
-    morfdict.PathDictTest,
     morfdict.MorfingTest,
     morfdict.ParrentsTest,
     morfdict.AccessorsTest,

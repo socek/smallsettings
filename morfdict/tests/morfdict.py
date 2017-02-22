@@ -2,7 +2,6 @@ from mock import patch
 from os import sep
 
 from .base import TestCase
-from morfdict import PathDict
 from morfdict import Paths
 from morfdict import StringDict
 
@@ -64,75 +63,6 @@ class AccessorsTest(TestCase):
         self.assertEqual('20', self.data['two']['mix'])
         self.assertEqual('25', self.data['two']['second'])
 
-    def test_paths(self):
-        paths = PathDict()
-
-        paths['one'] = 'xxx'
-        paths['three:mix'] = ['%(one)s', '10', '15']
-        self.assertEqual('xxx/10/15', paths['three:mix'])
-        self.assertEqual('xxx/10/15', paths['three']['mix'])
-
-    def test_cross_nameing(self):
-        paths = PathDict()
-        paths['project:home'] = 'myho'
-        paths['project:application'] = ['%(project:home)s', 'application']
-        paths['application:tests'] = ['%(project:application)s', 'tests']
-
-        self.assertEqual('myho/application/tests', paths['application:tests'])
-
-
-class PathDictTest(TestCase):
-
-    def test_simple_assign(self):
-        paths = PathDict()
-        paths['name'] = 'value'
-        self.assertEqual('value', paths['name'])
-
-    def test_assign_with_value_name(self):
-        paths = PathDict()
-        paths['name'] = '/value'
-        paths['name_two'] = ['%(name)s', 'value2']
-        self.assertEqual('/value/value2', paths['name_two'])
-
-    def test_assign_with_value_swith(self):
-        paths = PathDict()
-        paths['name'] = '/value'
-        paths['name_two'] = ['%(name)s', 'value2']
-        paths['name'] = '/value3'
-        self.assertEqual('/value3/value2', paths['name_two'])
-
-    def test_initial_data(self):
-        paths = PathDict({'name': 'value'})
-        self.assertEqual('value', paths['name'])
-
-    def test_contains_true(self):
-        paths = PathDict({'name': 'value'})
-        self.assertTrue('name' in paths)
-
-    def test_contains_false(self):
-        paths = PathDict({'name': 'value'})
-        self.assertFalse('name2' in paths)
-
-    @patch('morfdict.models.import_module')
-    def test_get_path_dotted(self, mimport_module):
-        mimport_module.return_value.__file__ = 'module/path/__init__.py'
-
-        paths = PathDict()
-        self.assertEqual(
-            paths.get_path_dotted('test.me:something/elo'),
-            'module/path/something/elo',
-        )
-
-    @patch('morfdict.models.import_module')
-    def test_get_path_dotted_no_file(self, mimport_module):
-        mimport_module.return_value.__file__ = 'module/path/__init__.py'
-
-        paths = PathDict()
-        self.assertEqual(
-            paths.get_path_dotted('test.me'),
-            'module/path/__init__.py',
-        )
-
 
 class MorfingTest(TestCase):
 
@@ -181,25 +111,6 @@ class ParrentsTest(TestCase):
 
     def test_get_default(self):
         self.assertEqual([], self.child.get('jinja2.extensions', []))
-
-    def test_to_dict(self):
-        paths = PathDict()
-        paths.append_parent(self.parent1, 'paths')
-        paths['root'] = ['/tmp', 'elo']
-        paths.set_path('my', 'root', 'self')
-        del self.child['morf3_parent']
-
-        self.assertEqual({
-            'morf_child': 'parent1 morf morf child',
-            'mychild': {
-                'child_key': 'child1',
-                'morf2_parent': 'parent2 morf',
-                'morf_parent': 'parent1 morf'},
-            'parent_key': 'parent1',
-            'paths': {
-                'my': '/tmp/elo/self',
-                'root': '/tmp/elo'}
-        }, self.parent1.to_dict())
 
     def test_setter(self):
         self.assertEqual(True, self.parent2 in self.child._parents)
@@ -281,3 +192,23 @@ class PathsTest(TestCase):
             'Nfourth': '{0}three{0}four'.format(sep),
             'Nfifth': '{0}three{0}fourfive'.format(sep),
         })
+
+    @patch('morfdict.models.import_module')
+    def test_get_path_from_module(self, mimport_module):
+        mimport_module.return_value.__file__ = 'module/path/__init__.py'
+
+        paths = Paths()
+        self.assertEqual(
+            paths.get_path_from_module('test.me:something/elo'),
+            'module/path/something/elo',
+        )
+
+    @patch('morfdict.models.import_module')
+    def test_get_path_from_module_no_file(self, mimport_module):
+        mimport_module.return_value.__file__ = 'module/path/__init__.py'
+
+        paths = Paths()
+        self.assertEqual(
+            paths.get_path_from_module('test.me'),
+            'module/path/__init__.py',
+        )
