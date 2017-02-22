@@ -45,29 +45,37 @@ StringDict is MorfDict whith default interpolation for itself.
     >> data['second']
     'one two'
 
-2.3 Using PathDict
-==================
+2.3 Using Paths
+===============
 
-PathDict is designed for storing paths.
-
-::
-
-    >> from morfdict import PathDict
-    >> paths = PathDict({'base' : '/tmp'})
-    >> paths['home'] = ['%(base)s', 'home', 'myname']
-    >> paths['home']
-    '/tmp/home/myname'
-
-Or you can make this:
+Paths is designed for storing paths.
 
 ::
 
-    >> from morfdict import PathDict
-    >> paths = PathDict({'base' : '/tmp'})
-    >> paths.set_path('main', 'base', 'home')
-    >> paths.set_path('home', 'main', 'myname')
-    >> paths['home']
+    >> from morfdict import Paths
+    >> paths = PathDict()
+    >> paths.set('base', 'tmp', is_root=True)
+    >> paths.set('myname', 'home', 'base')
+    >> paths.get('home')
     '/tmp/home/myname'
+
+Main purpose is to name all the paths that you use.
+
+::
+    >> paths.set(name='base', value='tmp')
+
+Second feature is to make parenting. So if you change the parent path, the child
+paths will change also.
+
+::
+
+    >> paths.set('base', 'tmp')
+    >> paths.set('child', 'one', parent='base')
+    >> assert paths.get('chilld') == 'tmp/one'
+    >>
+    >> paths.set('base', 'usr')
+    >> assert paths.get('child') == 'usr/one'
+
 
 2.4 Using Factory
 =================
