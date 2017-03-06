@@ -62,6 +62,7 @@ Paths is designed for storing paths.
 Main purpose is to name all the paths that you use.
 
 ::
+
     >> paths.set(name='base', value='tmp')
 
 Second feature is to make parenting. So if you change the parent path, the child

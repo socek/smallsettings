@@ -1,9 +1,27 @@
-from collections import namedtuple
 from importlib import import_module
 from os import path
 from os import sep
 
-PathElement = namedtuple('PathElement', ['parent', 'value', 'is_root'])
+
+class PathElement(object):
+
+    def __init__(self, name, value, parent=None, is_root=False, paths=None):
+        self.name = name
+        self._value = value
+        self.parent = parent
+        self.is_root = is_root
+        self.paths = paths
+
+    @property
+    def value(self):
+        return self._value
+
+
+class PathGeneratorElement(PathElement):
+
+    @property
+    def value(self):
+        return [self._value(self.paths)]
 
 
 class NoDefault:
@@ -163,16 +181,13 @@ class Paths(object):
         Get path by name.
         """
         element = self.paths[name]
-        if type(element) is PathElement:
-            if element.parent:
-                parent = self.get(element.parent)
-            else:
-                parent = ''
-            if element.is_root:
-                parent = sep + parent
-            return path.join(parent, *element.value)
+        if element.parent:
+            parent = self.get(element.parent)
         else:
-            return element(self)
+            parent = ''
+        if element.is_root:
+            parent = sep + parent
+        return path.join(parent, *element.value)
 
     def set(self, name, value, parent=None, is_root=False):
         """
@@ -184,16 +199,17 @@ class Paths(object):
         """
         if not isinstance(value, (list, tuple)):
             value = [value]
-        self.paths[name] = PathElement(parent, value, is_root)
+        self.paths[name] = PathElement(name, value, parent, is_root, self)
 
-    def set_generator(self, name, generator):
+    def set_generator(self, name, generator, parent=None, is_root=False):
         """
         Set path method generator.
             - name: normalized name of the path
             - generator: generation function which accepts this object as first
                 argument
         """
-        self.paths[name] = generator
+        self.paths[name] = PathGeneratorElement(
+            name, generator, parent, is_root, self)
 
     def to_dict(self):
         """

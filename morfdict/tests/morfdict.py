@@ -166,9 +166,12 @@ class PathsTest(TestCase):
         paths = Paths()
         paths.set('mypath', 'elo')
         paths.set_generator(
-            'myelo', lambda parent: parent.get('mypath') + 'two')
+            'myelo',
+            lambda parent: parent.get('mypath') + 'two',
+            parent='mypath',
+            is_root=True)
 
-        self.assertEqual(paths.get('myelo'), 'elotwo')
+        self.assertEqual(paths.get('myelo'), '/elo/elotwo')
 
     def test_set_long_path(self):
         paths = Paths()
