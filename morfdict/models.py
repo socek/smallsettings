@@ -4,6 +4,8 @@ from os import sep
 
 
 class PathElement(object):
+    TAB = '    '
+    FORMAT = '{0}{1}:{2}'
 
     def __init__(self, name, value, parent=None, is_root=False, paths=None):
         self.name = name
@@ -15,6 +17,28 @@ class PathElement(object):
     @property
     def value(self):
         return self._value
+
+    def format_line(self):
+        tabs = self._format_tabs()
+        return self.FORMAT.format(
+            tabs,
+            '/' + self.value[0] if self.is_root else self.value[0],
+            ' #' + self.name if self.name else '',
+        )
+
+    def _format_tabs(self):
+        return self.TAB * (len(self._get_parents()) - 1)
+
+    def _get_parents(self):
+        if not self.parent:
+            return [self]
+        else:
+            return [self] + self.paths.paths[self.parent]._get_parents()
+
+    def get_childs(self):
+        for element in self.paths.paths.values():
+            if element.parent == self.name:
+                yield element
 
 
 class PathGeneratorElement(PathElement):
@@ -231,3 +255,14 @@ class Paths(object):
             return path.join(dirpath, *args[1:])
         else:
             return module.__file__
+
+    def to_tree(self):
+        def do_tree(data, element):
+            data.append(self.paths[element.name].format_line())
+            for child in element.get_childs():
+                do_tree(data, child)
+        data = []
+        for element in self.paths.values():
+            if not element.parent:
+                do_tree(data, element)
+        return '\n'.join(data + [''])

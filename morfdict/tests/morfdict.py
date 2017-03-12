@@ -215,3 +215,74 @@ class PathsTest(TestCase):
             paths.get_path_from_module('test.me'),
             'module/path/__init__.py',
         )
+
+
+class TestTreePaths(TestCase):
+
+    def test_empty_paths(self):
+        paths = Paths()
+        self.assertEqual(paths.to_tree(), '')
+
+    def test_one_root(self):
+        paths = Paths()
+        paths.set('maineme', '', is_root=True)
+        self.assertEqual(
+            '''/: #maineme
+''',
+            paths.to_tree())
+
+    def test_simple_tree(self):
+        paths = Paths()
+        paths.set('maineme', 'main')
+        paths.set('m2', 'second', 'maineme')
+        paths.set('m3', 'third', 'maineme')
+        paths.set('m4', 'fourth', 'm3')
+        self.assertEqual(
+            '''main: #maineme
+    second: #m2
+    third: #m3
+        fourth: #m4
+''',
+            paths.to_tree())
+
+    def test_big_paths(self):
+        paths = Paths()
+        paths.set('cwd', 'src')
+        paths.set('pyproject', 'home')
+        paths.set('pyptemplates', 'templates', 'pyproject')
+
+        paths.set('package:src', 'src', 'cwd')
+        paths.set_generator(
+            'package:main', lambda paths: 'samlepackage', 'package:src')
+        paths.set(
+            'template_setuppy',
+            'setuppy.jinja2',
+            'pyptemplates',
+        )
+        paths.set('setuppy', 'setup.py', 'cwd')
+
+        paths.set('virtualenv:bin', 'bin', 'virtualenv:base')
+        paths.set('exe:python', 'python', 'virtualenv:bin')
+        paths.set('exe:pip', 'pip', 'virtualenv:bin')
+        paths.set_generator(
+            'virtualenv:base',
+            lambda paths: 'venv_{0}'.format('samlepackage'),
+            'cwd',
+        )
+        paths.set('report', '.bael.yml', 'cwd')
+
+        self.assertEqual(
+            '''src: #cwd
+    src: #package:src
+        samlepackage: #package:main
+    setup.py: #setuppy
+    venv_samlepackage: #virtualenv:base
+        bin: #virtualenv:bin
+            python: #exe:python
+            pip: #exe:pip
+    .bael.yml: #report
+home: #pyproject
+    templates: #pyptemplates
+        setuppy.jinja2: #template_setuppy
+''',
+            paths.to_tree(),)
