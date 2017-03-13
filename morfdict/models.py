@@ -254,3 +254,12 @@ class Paths(object):
             if not element.parent:
                 do_tree(data, element)
         return '\n'.join(data + [''])
+
+    def get_errors(self):
+        errors = []
+        for name in self.paths:
+            try:
+                self.get(name)
+            except Exception as error:
+                errors.append(error)
+        return errors

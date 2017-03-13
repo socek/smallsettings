@@ -224,6 +224,20 @@ class PathsTest(TestCase):
             'module/path/__init__.py',
         )
 
+    def test_errors(self):
+        paths = Paths()
+
+        self.assertEqual([], paths.get_errors())
+
+        paths.set('name', 'val', is_root=True)
+        self.assertEqual([], paths.get_errors())
+
+        paths.set('name', 'val', parent='me')
+        self.assertEqual(KeyError, type(paths.get_errors()[0]))
+
+        paths.set('me', 'val')
+        self.assertEqual([], paths.get_errors())
+
 
 class TestTreePaths(TestCase):
 
