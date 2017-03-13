@@ -38,6 +38,13 @@ class StringDictTest(TestCase):
         settings = StringDict({'name': 'value'})
         self.assertFalse('name2' in settings)
 
+    def test_error(self):
+        settings = StringDict({'name': 'value'})
+        self.assertEqual([], settings.get_errors())
+
+        settings['error'] = '%(errorkey)s'
+        self.assertEqual(KeyError, type(settings.get_errors()[0]))
+
 
 class AccessorsTest(TestCase):
 

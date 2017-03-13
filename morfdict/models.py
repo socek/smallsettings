@@ -158,6 +158,17 @@ class MorfDict(dict):
                 self[key] = value
         self._parents += data._parents
 
+    def get_errors(self):
+        errors = []
+        for key in list(self):
+            try:
+                value = self[key]
+                if isinstance(value, MorfDict):
+                    value = value.to_dict()
+            except Exception as error:
+                errors.append(error)
+        return errors
+
 
 class StringDict(MorfDict):
     """Class which tries to interpolate itself on morf."""
