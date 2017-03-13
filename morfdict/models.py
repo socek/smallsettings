@@ -231,6 +231,9 @@ class Paths(object):
             return module.__file__
 
     def to_tree(self):
+        """
+        Show paths in form of a tree.
+        """
         def do_tree(data, element):
             data.append(self.paths[element.name].format_line())
             for child in element.get_childs():
