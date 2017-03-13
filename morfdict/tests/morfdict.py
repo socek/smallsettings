@@ -47,20 +47,20 @@ class AccessorsTest(TestCase):
             {'name': 'one', 'two': {'mix': '10', 'second': '25'}})
 
     def test_simple_get(self):
-        self.assertEqual('10', self.data['two:mix'])
+        self.assertRaises(KeyError, lambda: self.data['two:mix'])
         self.assertEqual('10', self.data['two']['mix'])
 
     def test_deep_setter(self):
         self.data['three:mix'] = '15'
         self.assertEqual('15', self.data['three:mix'])
-        self.assertEqual('15', self.data['three']['mix'])
+        self.assertRaises(KeyError, lambda: self.data['three']['mix'])
 
     def test_deep_setter_already_made(self):
         self.data['two:mix'] = '20'
 
         self.assertEqual('20', self.data['two:mix'])
-        self.assertEqual('25', self.data['two:second'])
-        self.assertEqual('20', self.data['two']['mix'])
+        self.assertRaises(KeyError, lambda: self.data['two:second'])
+        self.assertEqual('10', self.data['two']['mix'])
         self.assertEqual('25', self.data['two']['second'])
 
 
@@ -104,7 +104,7 @@ class ParrentsTest(TestCase):
         self.assertRaises(KeyError, self.child.get, 'morf3_parent')
 
     def test_morf_child(self):
-        self.assertEqual('parent1 morf morf child', self.parent1['morf_child'])
+        self.assertRaises(KeyError, lambda: self.parent1['morf_child'])
 
     def test_get_default_error(self):
         self.assertRaises(KeyError, self.child.get, 'morf3_parent', 'default')
@@ -130,6 +130,7 @@ class ParrentsTest(TestCase):
         newsettings['my_data']['elf'] = '10'
         newsettings['mychild:second'] = '30'
 
+        self.parent1['morf_child'] = 'none'
         newsettings.merge(self.parent1)
         newsettings['parent_key'] = 'newpar'
         newsettings['parent3_key'] = 'par3'
@@ -138,13 +139,13 @@ class ParrentsTest(TestCase):
             'my_data': {
                 'elf': '10',
             },
-            'morf_child': 'newpar morf morf child',
+            'morf_child': 'none',
             'mychild': {
                 'child_key': 'child1',
                 'morf2_parent': 'parent2 morf',
                 'morf3_parent': 'par3 morf',
-                'morf_parent': 'newpar morf',
-                'second': '30'},
+                'morf_parent': 'parent1 morf'},
+            'mychild:second': '30',
             'parent_key': 'newpar',
             'parent3_key': 'par3',
         }, newsettings.to_dict())

@@ -67,19 +67,9 @@ class MorfDict(dict):
             self[name] = value
 
     def __getitem__(self, key):
-        left, right = self._split_key(key)
-        value = self._get_from_self_or_parent(left)
-        if right:
-            value = value[right]
+        value = self._get_from_self_or_parent(key)
         method = self._morf.get(key, self._default_morf)
         return method(self, value)
-
-    def _split_key(self, huge_key):
-        try:
-            left, right = huge_key.split(':', 1)
-            return left, right
-        except:
-            return huge_key, None
 
     def _raw_get(self, key):
         return super().__getitem__(key)
@@ -114,25 +104,9 @@ class MorfDict(dict):
         def make_set(key, value):
             return super(MorfDict, self).__setitem__(key, value)
 
-        def set_child_morfdict(left, right, value):
-            # if there is key with ':' it should make child morf dict and
-            # insert data to it
-            if left not in self:
-                data = self.__class__()
-                data.append_parent(self)
-            else:
-                data = self[left]
-            data[right] = value
-            return make_set(left, data)
-
         value = convert_dict_to_morfdict_if_avalible(value)
         append_parent_if_avalible(value)
-
-        left, right = self._split_key(key)
-        if right is None:
-            return make_set(key, value)
-        else:
-            return set_child_morfdict(left, right, value)
+        return make_set(key, value)
 
     def set_morf(self, key, morf):
         """Set morf method for this key."""
