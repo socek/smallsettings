@@ -239,6 +239,41 @@ class PathsTest(TestCase):
         self.assertEqual([], paths.get_errors())
 
 
+class PathsContextTest(TestCase):
+
+    def setUp(self):
+        self.paths = Paths()
+
+        with self.paths.set('base', '/tmp', is_root=True) as base:
+            with base.set('hello', 'hello') as hello:
+                hello.set('name', 'name1')
+                hello.set('name2', 'name2')
+
+    def test_get(self):
+        assert self.paths.get('name') == '/tmp/hello/name1'
+        assert self.paths.get('name2') == '/tmp/hello/name2'
+
+    def test_set_by_context(self):
+        with self.paths.set('hello', 'hello', parent='base') as hello:
+            hello.set('name', 'name3')
+            hello.set('name2', 'name4')
+
+        assert self.paths.get('name') == '/tmp/hello/name3'
+        assert self.paths.get('name2') == '/tmp/hello/name4'
+
+    def test_switch_context(self):
+        with self.paths.context('base') as base:
+            with base.context('hello') as hello:
+                hello.set('name', 'name5')
+                hello.set('name2', 'name6')
+
+                assert hello.get('name') == '/tmp/hello/name5'
+                assert hello.get('name2') == '/tmp/hello/name6'
+
+        assert self.paths.get('name') == '/tmp/hello/name5'
+        assert self.paths.get('name2') == '/tmp/hello/name6'
+
+
 class TestTreePaths(TestCase):
 
     def test_empty_paths(self):

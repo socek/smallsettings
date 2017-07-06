@@ -9,7 +9,7 @@ def read(fname):
 if __name__ == '__main__':
     setup(
         name='MorfDict',
-        version='0.4.2',
+        version='0.4.3',
         author='Dominik "Socek" Długajczy',
         author_email='msocek@gmail.com',
         test_suite='morfdict.tests.get_all_test_suite',

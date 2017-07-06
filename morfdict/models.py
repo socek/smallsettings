@@ -209,6 +209,10 @@ class Paths(object):
         if not isinstance(value, (list, tuple)):
             value = [value]
         self.paths[name] = PathElement(name, value, parent, is_root, self)
+        return self.context(name)
+
+    def context(self, name):
+        return PathsContext(self, name)
 
     def set_generator(self, name, generator, parent=None, is_root=False):
         """
@@ -263,3 +267,28 @@ class Paths(object):
             except Exception as error:
                 errors.append(error)
         return errors
+
+
+class PathsContext(object):
+
+    def __init__(self, paths, name):
+        self.paths = paths
+        self.name = name
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def set(self, name, value, is_root=False):
+        return self.paths.set(name, value, parent=self.name, is_root=is_root)
+
+    def get(self, name):
+        """
+        Get path by name.
+        """
+        return self.paths.get(name)
+
+    def context(self, name):
+        return self.paths.context(name)

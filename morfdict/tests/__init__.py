@@ -11,6 +11,7 @@ all_test_cases = [
     morfdict.AccessorsTest,
     morfdict.PathsTest,
     morfdict.TestTreePaths,
+    morfdict.PathsContextTest,
 
     factory.FactoryTest,
 ]
