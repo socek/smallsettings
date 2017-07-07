@@ -106,12 +106,12 @@ class FactoryTest(TestCase):
             with patch.object(self.factory, 'run_module') as run_module:
                 with patch.object(self.factory, 'run_module_without_errors') as run_module_without_errors:
                     result = self.factory.make_settings(
-                        {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', False)])
+                        {'settings': 1}, additional_modules=[('local1', False)])
 
                     self.assertEqual(
                         (self.factory.settings, self.factory.paths), result)
                     init_data.assert_called_once_with(
-                        {'settings': 1}, {'paths': 'path'})
+                        {'settings': 1})
                     run_module.assert_called_once_with('default')
                     run_module_without_errors.assert_called_once_with('local1')
 
@@ -122,12 +122,12 @@ class FactoryTest(TestCase):
             with patch.object(self.factory, 'run_module') as run_module:
                 with patch.object(self.factory, 'run_module_without_errors') as run_module_without_errors:
                     result = self.factory.make_settings(
-                        {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', True)])
+                        {'settings': 1}, additional_modules=[('local1', True)])
 
                     self.assertEqual(
                         (self.factory.settings, self.factory.paths), result)
                     init_data.assert_called_once_with(
-                        {'settings': 1}, {'paths': 'path'})
+                        {'settings': 1})
                     run_module.assert_called_with('local1')
                     self.assertEqual(2, run_module.call_count)
                     self.assertEqual(0, run_module_without_errors.call_count)

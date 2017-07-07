@@ -54,7 +54,7 @@ class Factory(object):
 
         self.paths.set('module_root', dirname(abspath(mainmodule.__file__)))
 
-    def make_settings(self, settings={}, paths={}, additional_modules=None):
+    def make_settings(self, settings={}, additional_modules=None):
         """Make StringDict and PathDict from modules.
 
         :param settings: default settings
@@ -65,7 +65,7 @@ class Factory(object):
         :param method: will raise ImportError on missing module.
         """
         additional_modules = additional_modules or (('local', False),)
-        self.init_data(settings, paths)
+        self.init_data(settings)
 
         self.run_module('default')
 
