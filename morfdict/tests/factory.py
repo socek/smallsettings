@@ -50,7 +50,7 @@ class FactoryTest(TestCase):
             import_module.assert_called_once_with('some_name')
             module = import_module.return_value
             module.make_settings.assert_called_once_with(
-                self.factory.settings, self.factory.paths)
+                self.factory.settings)
 
     def test_run_module_error(self):
         self.factory.settings = MagicMock()
@@ -63,7 +63,7 @@ class FactoryTest(TestCase):
                 ImportError, self.factory.run_module, 'some_name')
 
             module.make_settings.assert_called_once_with(
-                self.factory.settings, self.factory.paths)
+                self.factory.settings)
             import_module.assert_called_once_with('some_name')
 
     def test_run_module_without_errors(self):
@@ -75,7 +75,7 @@ class FactoryTest(TestCase):
             import_module.assert_called_once_with('some_name')
             module = import_module.return_value
             module.make_settings.assert_called_once_with(
-                self.factory.settings, self.factory.paths)
+                self.factory.settings)
 
     def test_run_module_without_errors_error(self):
         self.factory.settings = MagicMock()
@@ -88,7 +88,7 @@ class FactoryTest(TestCase):
 
             import_module.assert_called_once_with('some_name')
             module.make_settings.assert_called_once_with(
-                self.factory.settings, self.factory.paths)
+                self.factory.settings)
 
     def test_init_data(self):
         self.mocks['import'].return_value.__file__ = '/one/two/three.py'
@@ -106,12 +106,12 @@ class FactoryTest(TestCase):
             with patch.object(self.factory, 'run_module') as run_module:
                 with patch.object(self.factory, 'run_module_without_errors') as run_module_without_errors:
                     result = self.factory.make_settings(
-                        {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', False)])
+                        {'settings': 1}, additional_modules=[('local1', False)])
 
                     self.assertEqual(
                         (self.factory.settings, self.factory.paths), result)
                     init_data.assert_called_once_with(
-                        {'settings': 1}, {'paths': 'path'})
+                        {'settings': 1})
                     run_module.assert_called_once_with('default')
                     run_module_without_errors.assert_called_once_with('local1')
 
@@ -122,12 +122,11 @@ class FactoryTest(TestCase):
             with patch.object(self.factory, 'run_module') as run_module:
                 with patch.object(self.factory, 'run_module_without_errors') as run_module_without_errors:
                     result = self.factory.make_settings(
-                        {'settings': 1}, {'paths': 'path'}, additional_modules=[('local1', True)])
+                        {'settings': 1}, additional_modules=[('local1', True)])
 
                     self.assertEqual(
                         (self.factory.settings, self.factory.paths), result)
-                    init_data.assert_called_once_with(
-                        {'settings': 1}, {'paths': 'path'})
+                    init_data.assert_called_once_with({'settings': 1})
                     run_module.assert_called_with('local1')
                     self.assertEqual(2, run_module.call_count)
                     self.assertEqual(0, run_module_without_errors.call_count)

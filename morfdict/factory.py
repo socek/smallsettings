@@ -32,14 +32,14 @@ class Factory(object):
         """Import settings from a module. Raise ImportError on missing module.
         """
         module = self.import_module(name)
-        module.make_settings(self.settings, self.paths)
+        module.make_settings(self.settings)
 
     def run_module_without_errors(self, name):
         """Import settings from a module. Do not raise ImportError on missing
         module."""
         try:
             module = self.import_module(name)
-            module.make_settings(self.settings, self.paths)
+            module.make_settings(self.settings)
         except ImportError:
             pass
 
@@ -54,7 +54,7 @@ class Factory(object):
 
         self.paths.set('module_root', dirname(abspath(mainmodule.__file__)))
 
-    def make_settings(self, settings={}, paths={}, additional_modules=None):
+    def make_settings(self, settings={}, additional_modules=None):
         """Make StringDict and PathDict from modules.
 
         :param settings: default settings
@@ -65,7 +65,7 @@ class Factory(object):
         :param method: will raise ImportError on missing module.
         """
         additional_modules = additional_modules or (('local', False),)
-        self.init_data(settings, paths)
+        self.init_data(settings)
 
         self.run_module('default')
 
