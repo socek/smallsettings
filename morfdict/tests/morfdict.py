@@ -4,6 +4,7 @@ from os import sep
 from .base import TestCase
 from morfdict import Paths
 from morfdict import StringDict
+from morfdict.models import EnvirontmentValueMissing
 
 
 class StringDictTest(TestCase):
@@ -343,3 +344,40 @@ home: #pyproject
         setuppy.jinja2: #template_setuppy
 ''',
             paths.to_tree(),)
+
+
+class StringDictEnvTest(TestCase):
+
+    def setUp(self):
+        self.environ_patcher = patch('morfdict.models.environ', {})
+        self.menviron = self.environ_patcher.start()
+        self.settings = StringDict()
+
+    def tearDown(self):
+        self.environ_patcher.stop()
+
+    def test_simple_assign(self):
+        self.menviron['NAME'] = 'value1'
+
+        self.assertEqual(
+            self.settings.get_from_env('NAME'),
+            'value1')
+
+    def test_with_default(self):
+        self.assertEqual(
+            self.settings.get_from_env('NAME', 'value2'),
+            'value2')
+
+    def test_with_error(self):
+        try:
+            self.settings.get_from_env('NAME', error='message3')
+            assert False
+        except EnvirontmentValueMissing as error:
+            assert error.message == 'message3'
+
+    def test_with_default_error(self):
+        try:
+            self.settings.get_from_env('NAME')
+            assert False
+        except EnvirontmentValueMissing as error:
+            assert error.message == 'Environtment "NAME" value missing'

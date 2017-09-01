@@ -12,6 +12,7 @@ all_test_cases = [
     morfdict.PathsTest,
     morfdict.TestTreePaths,
     morfdict.PathsContextTest,
+    morfdict.StringDictEnvTest,
 
     factory.FactoryTest,
 ]

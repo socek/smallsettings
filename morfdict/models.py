@@ -1,6 +1,13 @@
 from importlib import import_module
+from os import environ
 from os import path
 from os import sep
+
+
+class EnvirontmentValueMissing(Exception):
+
+    def __init__(self, name, message=None):
+        self.message = message or 'Environtment "{0}" value missing'.format(name)
 
 
 class PathElement(object):
@@ -168,6 +175,23 @@ class MorfDict(dict):
             except Exception as error:
                 errors.append(error)
         return errors
+
+    def get_from_env(self, name, default=None, error=None):
+        """
+        Get setting fro environtment.
+        - name - name of environtment variable
+        - default - default value for this variable
+        - error - error message which will be raised when value not found
+        default and error args can not be used together
+        """
+        assert not(default and error)
+        if default:
+            return environ.get(name, default)
+        else:
+            try:
+                return environ[name]
+            except KeyError:
+                raise EnvirontmentValueMissing(name, error)
 
 
 class StringDict(MorfDict):
