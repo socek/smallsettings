@@ -176,7 +176,7 @@ class MorfDict(dict):
                 errors.append(error)
         return errors
 
-    def get_from_env(self, name, default=None, error=None):
+    def get_from_env(self, name, default=NotImplemented, error=None):
         """
         Get setting fro environtment.
         - name - name of environtment variable
@@ -184,8 +184,9 @@ class MorfDict(dict):
         - error - error message which will be raised when value not found
         default and error args can not be used together
         """
-        assert not(default and error)
-        if default:
+        has_default = default != NotImplemented
+        assert not(has_default and error)
+        if has_default:
             return environ.get(name, default)
         else:
             try:

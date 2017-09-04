@@ -368,6 +368,11 @@ class StringDictEnvTest(TestCase):
             self.settings.get_from_env('NAME', 'value2'),
             'value2')
 
+    def test_with_false_default(self):
+        self.assertEqual(
+            self.settings.get_from_env('NAME', None),
+            None)
+
     def test_with_error(self):
         try:
             self.settings.get_from_env('NAME', error='message3')
